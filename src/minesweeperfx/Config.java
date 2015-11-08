@@ -4,6 +4,8 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import static minesweeperfx.Options.*;
+
 public class Config {
 
 	public static final String DIRECTORY = System.getenv("APPDATA") + "\\MinesweeperFX\\";
@@ -16,11 +18,11 @@ public class Config {
 		PrintWriter pw;
 		try {
 			pw = new PrintWriter(DIRECTORY + "minesweeperfx.cfg");
-			pw.println("Difficulty:" + Options.getDifficulty());
-			pw.println("NF:" + Options.getNF());
-			pw.println("Show Flag:" + Options.getShowFlagCount());
-			pw.println("Show Timer:" + Options.getShowTimer());
-			pw.println("Tile Size:" + Options.getTileSize());
+			pw.println("Difficulty:" + getDifficulty());
+			pw.println("NF:" + getNF());
+			pw.println("Show Flag:" + getShowFlagCount());
+			pw.println("Show Timer:" + getShowTimer());
+			pw.println("Tile Size:" + (int)getTileSize());
 			pw.close();
 		} catch(IOException e) {
 			e.printStackTrace();
@@ -28,19 +30,26 @@ public class Config {
 	}
 
 	public static void loadSettings() {
-		BufferedReader br;
-		Map<String, Object> map = new HashMap<>();
+		Map<String, String> map = new HashMap<>();
 		try {
-			br = new BufferedReader(new FileReader(DIRECTORY + "minesweeperfx.cfg"));
+			BufferedReader br = new BufferedReader(new FileReader(DIRECTORY + "minesweeperfx.cfg"));
 			br.lines().forEach(s -> map.put(s.substring(0, s.indexOf(":")), s.substring(s.indexOf(":") + 1)));
 			br.close();
-		} catch(IOException e) {
-			saveSettings();
-		}
-		Options.setDifficulty(Integer.parseInt((String)map.get("Difficulty")));
-		Options.getNFProperty().set(Boolean.parseBoolean((String)map.get("NF")));
-		Options.getShowFlagCountProperty().set(Boolean.parseBoolean((String)map.get("Show Flag")));
-		Options.getShowTimerProperty().set(Boolean.parseBoolean((String)map.get("Show Timer")));
-		Options.getTileSizeProperty().set((int)Double.parseDouble((String)map.get("Tile Size")));
+		} catch(IOException ignored) {}
+		if(!map.values().isEmpty())
+			initializeSettings(Integer.parseInt(map.get("Difficulty")), Boolean.parseBoolean(map.get("NF")),
+							   Boolean.parseBoolean(map.get("Show Flag")), Boolean.parseBoolean(map.get("Show Timer")),
+							   Integer.parseInt(map.get("Tile Size")));
+		else
+			initializeSettings(0, false, true, true, 30);
+	}
+
+	private static void initializeSettings(
+			int difficulty, boolean nf, boolean showFlag, boolean showTimer, int tileSize) {
+		Options.setDifficulty(difficulty);
+		Options.getNFProperty().set(nf);
+		Options.getShowFlagCountProperty().set(showFlag);
+		Options.getShowTimerProperty().set(showTimer);
+		Options.getTileSizeProperty().set(tileSize);
 	}
 }

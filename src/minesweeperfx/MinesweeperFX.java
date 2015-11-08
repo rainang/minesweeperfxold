@@ -19,10 +19,8 @@ import static minesweeperfx.Options.*;
 import static minesweeperfx.logic.FSM.*;
 
 public class MinesweeperFX extends Application {
-	
-	public static void main(String[] args) {
-		launch(args);
-	}
+
+	public static final String VERSION = "v1.0.2";
 
 	public static MinesweeperFX INSTANCE;
 
@@ -59,7 +57,7 @@ public class MinesweeperFX extends Application {
 		
 		stage.setScene(SCENE);
 		stage.setResizable(false);
-		stage.setTitle("MinesweeperFX v1.0.1");
+		stage.setTitle("MinesweeperFX " + VERSION);
 		stage.show();
 	}
 	
@@ -92,7 +90,7 @@ public class MinesweeperFX extends Application {
 		MENU_BAR.newGame.setOnAction(a -> GAME_STATE.doIt(GAME_NEW));
 		MENU_BAR.restartGame.setOnAction(a -> GAME_STATE.doIt(GAME_RESTART));
 		MENU_BAR.pauseGame.setOnAction((a) -> GAME_STATE.doIt(PAUSE_GAME));
-		GAME.getPauseProperty().addListener((q,b,c)->GRID.setVisible(!c));
+		GAME.getPauseProperty().addListener((q, b, c) -> GRID.setVisible(!c));
 
 		MENU_BAR.nf.selectedProperty().addListener((a, b, c) -> {
 			MENU_BAR.showFlags.setDisable(MENU_BAR.nf.isSelected());
@@ -125,5 +123,9 @@ public class MinesweeperFX extends Application {
 
 	public static Game getGame() {
 		return INSTANCE.GAME;
+	}
+
+	public static void main(String[] args) {
+		launch(args);
 	}
 }
