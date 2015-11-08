@@ -59,7 +59,7 @@ public class MinesweeperFX extends Application {
 		
 		stage.setScene(SCENE);
 		stage.setResizable(false);
-		stage.setTitle("MinesweeperFX v1.0.0");
+		stage.setTitle("MinesweeperFX v1.0.1");
 		stage.show();
 	}
 	

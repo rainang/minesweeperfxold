@@ -58,7 +58,7 @@ public class Grid extends GridPane {
 	
 	public void update() {
 		pane.border.setWidth(getColumns()*getTileSize() + 2*(BORDER_SIZE - 1) + 1);
-		pane.border.setHeight(getColumns()*getTileSize() + 2*(BORDER_SIZE - 1) + 1);
+		pane.border.setHeight(getRows()*getTileSize() + 2*(BORDER_SIZE - 1) + 1);
 		for(int j = 0; j < getRows(); j++)
 			for(int i = 0; i < getColumns(); i++)
 				tileset[i][j].update();
