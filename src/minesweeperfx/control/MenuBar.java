@@ -8,13 +8,11 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
-//import static minesweeperfx.Options.getDifficulty;
-//import static minesweeperfx.Options.getTileSize;
-
 public class MenuBar extends javafx.scene.control.MenuBar {
 
 	public final Menu file    = new Menu("Game");
 	public final Menu options = new Menu("Options");
+	public final Menu profile = new Menu("Profile");
 
 	public final MenuItem newGame     = new MenuItem("New");
 	public final MenuItem restartGame = new MenuItem("Restart");
@@ -32,6 +30,8 @@ public class MenuBar extends javafx.scene.control.MenuBar {
 	public final Slider         slider         = new Slider(24, 36, 30);
 	public final CustomMenuItem tileSizeSlider = new CustomMenuItem(new VBox(label, slider));
 
+	public final MenuItem viewProfile = new MenuItem("View Profile");
+
 	public MenuBar() {
 		slider.setSnapToTicks(true);
 		slider.setMinorTickCount(4);
@@ -44,6 +44,7 @@ public class MenuBar extends javafx.scene.control.MenuBar {
 		difficulty[0].setAccelerator(new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.CONTROL_DOWN));
 		difficulty[1].setAccelerator(new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.CONTROL_DOWN));
 		difficulty[2].setAccelerator(new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.CONTROL_DOWN));
+		viewProfile.setAccelerator(new KeyCodeCombination(KeyCode.P, KeyCombination.CONTROL_DOWN));
 
 		tileSizeSlider.setHideOnClick(false);
 		label.setTextFill(Color.gray(0.25));
@@ -53,6 +54,7 @@ public class MenuBar extends javafx.scene.control.MenuBar {
 		options.getItems()
 			   .addAll(difficulty[0], difficulty[1], difficulty[2], new SeparatorMenuItem(), nf, showFlags, showTimer,
 					   new SeparatorMenuItem(), tileSizeSlider);
-		getMenus().addAll(file, options);
+		profile.getItems().add(viewProfile);
+		getMenus().addAll(file, options, profile);
 	}
 }

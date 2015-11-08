@@ -5,6 +5,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import minesweeperfx.Options;
 import minesweeperfx.Timer;
+import minesweeperfx.statistics.GameStats;
+import minesweeperfx.statistics.Profile;
 
 import static minesweeperfx.Options.*;
 import static minesweeperfx.logic.FSM.*;
@@ -19,6 +21,8 @@ public class Game {
 
 	private final IntegerProperty tilesOpen = new SimpleIntegerProperty();
 	private final IntegerProperty flagsUsed = new SimpleIntegerProperty();
+
+	private boolean restart;
 
 	public Game() {
 		board.update();
@@ -68,6 +72,7 @@ public class Game {
 	}
 
 	public void newGame(boolean restart) {
+		this.restart = restart;
 		timer.reset();
 		tilesOpen.set(0);
 		flagsUsed.set(0);
@@ -77,6 +82,9 @@ public class Game {
 	public void gameOver(boolean win) {
 		timer.stop();
 		board.gameOver(win);
+		if(win && !restart)
+			Profile.writeStats(new GameStats(Options.getDifficulty(), Options.getNF(), timer.getLongTime(),
+											 System.currentTimeMillis()));
 	}
 
 	public void flag() {

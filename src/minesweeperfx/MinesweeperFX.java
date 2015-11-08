@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.RadioMenuItem;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.GridPane;
@@ -13,14 +14,16 @@ import javafx.stage.Stage;
 import minesweeperfx.control.DataPanel;
 import minesweeperfx.control.Grid;
 import minesweeperfx.control.MenuBar;
+import minesweeperfx.logic.FSM;
 import minesweeperfx.logic.Game;
+import minesweeperfx.statistics.Profile;
 
 import static minesweeperfx.Options.*;
 import static minesweeperfx.logic.FSM.*;
 
 public class MinesweeperFX extends Application {
 
-	public static final String VERSION = "v1.0.2";
+	public static final String VERSION = "v1.1.0";
 
 	public static MinesweeperFX INSTANCE;
 
@@ -36,6 +39,9 @@ public class MinesweeperFX extends Application {
 	
 	@Override
 	public void start(Stage stage) throws Exception {
+		IO.initMSFXDirectory();
+		Profile.readStats();
+
 		INSTANCE = this;
 		MENU_BAR = new MenuBar();
 		TABLE = new GridPane();
@@ -59,6 +65,9 @@ public class MinesweeperFX extends Application {
 		stage.setResizable(false);
 		stage.setTitle("MinesweeperFX " + VERSION);
 		stage.show();
+		stage.focusedProperty().addListener((a, b, c) -> {
+			FSM.GAME_STATE.doIt(PAUSE_GAME);
+		});
 	}
 	
 	private void adjustStageSize(Stage stage) {
@@ -82,6 +91,7 @@ public class MinesweeperFX extends Application {
 		stage.setHeight(BORDER_PADDING*3 + height + 29 + 25 +
 								DATA_PANEL.getBorderedPane().border.getHeight());
 		stage.centerOnScreen();
+		stage.getIcons().add(new Image(MinesweeperFX.class.getResourceAsStream("bomb.png")));
 	}
 
 	public void initMenu() {
@@ -103,6 +113,8 @@ public class MinesweeperFX extends Application {
 		MENU_BAR.difficulty[0].setOnAction(a -> setDifficulty(0));
 		MENU_BAR.difficulty[1].setOnAction(a -> setDifficulty(1));
 		MENU_BAR.difficulty[2].setOnAction(a -> setDifficulty(2));
+
+		MENU_BAR.viewProfile.setOnAction(a -> Profile.viewProfile());
 
 		for(RadioMenuItem item : MENU_BAR.difficulty)
 			item.selectedProperty().addListener((a, b, c) -> {

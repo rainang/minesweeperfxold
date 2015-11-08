@@ -1,41 +1,27 @@
 package minesweeperfx;
 
-import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import static minesweeperfx.Options.*;
 
 public class Config {
 
-	public static final String DIRECTORY = System.getenv("APPDATA") + "\\MinesweeperFX\\";
+	public static final String FILE_NAME = "minesweeperfx.cfg";
 
 	public static void saveSettings() {
-		File dir = new File(DIRECTORY);
-		if(!dir.exists())
-			if(dir.mkdirs())
-				System.out.println("Unable to create config file!");
-		PrintWriter pw;
-		try {
-			pw = new PrintWriter(DIRECTORY + "minesweeperfx.cfg");
-			pw.println("Difficulty:" + getDifficulty());
-			pw.println("NF:" + getNF());
-			pw.println("Show Flag:" + getShowFlagCount());
-			pw.println("Show Timer:" + getShowTimer());
-			pw.println("Tile Size:" + (int)getTileSize());
-			pw.close();
-		} catch(IOException e) {
-			e.printStackTrace();
-		}
+		IO.write(FILE_NAME, FXCollections.observableArrayList("Difficulty:" + getDifficulty(), "NF:" + getNF(),
+															  "Show Flag:" + getShowFlagCount(),
+															  "Show Timer:" + getShowTimer(),
+															  "Tile Size:" + (int)getTileSize()));
 	}
 
 	public static void loadSettings() {
+		ObservableList<String> list = IO.read(FILE_NAME);
 		Map<String, String> map = new HashMap<>();
-		try {
-			BufferedReader br = new BufferedReader(new FileReader(DIRECTORY + "minesweeperfx.cfg"));
-			br.lines().forEach(s -> map.put(s.substring(0, s.indexOf(":")), s.substring(s.indexOf(":") + 1)));
-			br.close();
-		} catch(IOException ignored) {}
+		list.forEach(s -> map.put(s.substring(0, s.indexOf(":")), s.substring(s.indexOf(":") + 1)));
 		if(!map.values().isEmpty())
 			initializeSettings(Integer.parseInt(map.get("Difficulty")), Boolean.parseBoolean(map.get("NF")),
 							   Boolean.parseBoolean(map.get("Show Flag")), Boolean.parseBoolean(map.get("Show Timer")),

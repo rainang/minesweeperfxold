@@ -45,7 +45,11 @@ public class Timer {
 	public void pause() {
 		pause.set(!pause.get());
 	}
-
+	
+	public long getLongTime() {
+		return longTime.get();
+	}
+	
 	public StringProperty getFormattedTimeProperty() {
 		return formattedTime;
 	}
