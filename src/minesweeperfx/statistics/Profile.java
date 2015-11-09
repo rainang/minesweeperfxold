@@ -3,10 +3,9 @@ package minesweeperfx.statistics;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import minesweeperfx.IO;
-
+import static minesweeperfx.Constants.*;
 public class Profile {
 
-	private static final String                    PROFILE      = System.getProperty("user.name");
 	private static final ObservableList<GameStats> STATS        = FXCollections.observableArrayList();
 	private static final ProfileView               PROFILE_VIEW = new ProfileView(STATS);
 
@@ -15,11 +14,11 @@ public class Profile {
 		ObservableList<String> list = FXCollections.observableArrayList();
 		STATS.forEach(gs -> list
 				.add(gs.getDifficulty() + ":" + (gs.getNF() ? 1 : 0) + ":" + gs.getTime() + ":" + gs.getDate()));
-		IO.write(PROFILE + ".dat", list);
+		IO.write(FILE_PROFILE, list);
 	}
 
 	public static void readStats() {
-		ObservableList<String> list = IO.read(PROFILE + ".dat");
+		ObservableList<String> list = IO.read(FILE_PROFILE);
 		list.forEach(s -> {
 
 			int difficulty = Integer.parseInt(s.substring(0, s.indexOf(":")));

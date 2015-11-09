@@ -4,7 +4,6 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.RadioMenuItem;
-import javafx.scene.image.Image;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.GridPane;
@@ -18,12 +17,12 @@ import minesweeperfx.logic.FSM;
 import minesweeperfx.logic.Game;
 import minesweeperfx.statistics.Profile;
 
+import static minesweeperfx.Constants.ICON;
+import static minesweeperfx.Constants.VERSION;
 import static minesweeperfx.Options.*;
 import static minesweeperfx.logic.FSM.*;
 
 public class MinesweeperFX extends Application {
-
-	public static final String VERSION = "v1.1.0";
 
 	public static MinesweeperFX INSTANCE;
 
@@ -91,7 +90,7 @@ public class MinesweeperFX extends Application {
 		stage.setHeight(BORDER_PADDING*3 + height + 29 + 25 +
 								DATA_PANEL.getBorderedPane().border.getHeight());
 		stage.centerOnScreen();
-		stage.getIcons().add(new Image(MinesweeperFX.class.getResourceAsStream("bomb.png")));
+		stage.getIcons().add(ICON);
 	}
 
 	public void initMenu() {
@@ -130,6 +129,8 @@ public class MinesweeperFX extends Application {
 			MENU_BAR.difficulty[c.intValue()].setSelected(true);
 			GRID.update();
 		});
+		GRID.buttonNew.setOnAction(a -> GAME_STATE.doIt(GAME_NEW));
+		GRID.buttonRestart.setOnAction(a -> GAME_STATE.doIt(GAME_RESTART));
 		Grid.MOUSE_POS.addListener((a, b, c) -> GAME.setFocus(GAME.board.getTile(c.tileX, c.tileY)));
 	}
 

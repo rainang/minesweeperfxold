@@ -3,6 +3,7 @@ package minesweeperfx.logic;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import minesweeperfx.MinesweeperFX;
 import minesweeperfx.Options;
 import minesweeperfx.Timer;
 import minesweeperfx.statistics.GameStats;
@@ -72,8 +73,9 @@ public class Game {
 	}
 
 	public void newGame(boolean restart) {
-		this.restart = restart;
 		timer.reset();
+		MinesweeperFX.INSTANCE.GRID.setGameOver(false);
+		this.restart = restart;
 		tilesOpen.set(0);
 		flagsUsed.set(0);
 		board.newGame(restart);
@@ -81,6 +83,7 @@ public class Game {
 
 	public void gameOver(boolean win) {
 		timer.stop();
+		MinesweeperFX.INSTANCE.GRID.setGameOver(true);
 		board.gameOver(win);
 		if(win && !restart)
 			Profile.writeStats(new GameStats(Options.getDifficulty(), Options.getNF(), timer.getLongTime(),

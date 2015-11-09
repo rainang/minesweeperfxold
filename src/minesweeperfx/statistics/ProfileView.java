@@ -4,6 +4,10 @@ import java.util.Date;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
+
+import static minesweeperfx.Constants.ICON;
+import static minesweeperfx.Constants.PROFILE;
 
 public class ProfileView extends TableView<GameStats> {
 
@@ -16,6 +20,10 @@ public class ProfileView extends TableView<GameStats> {
 
 	public ProfileView(ObservableList<GameStats> stats) {
 		super(stats);
+		Stage stage = ((Stage)dialog.getDialogPane().getScene().getWindow());
+		stage.getIcons().add(ICON);
+		stage.setTitle("High Scores : " + PROFILE);
+
 		colDifficulty.setCellValueFactory(new PropertyValueFactory("difficulty"));
 		colTime.setCellValueFactory(new PropertyValueFactory("time"));
 		colDate.setCellValueFactory(new PropertyValueFactory("date"));
@@ -25,7 +33,7 @@ public class ProfileView extends TableView<GameStats> {
 		colDifficulty.setMinWidth(i);
 		colDifficulty.setMaxWidth(i);
 		colDifficulty.setPrefWidth(i);
-		i=60;
+		i = 60;
 		colTime.setMinWidth(i);
 		colTime.setMaxWidth(i);
 		colTime.setPrefWidth(i);
@@ -33,7 +41,7 @@ public class ProfileView extends TableView<GameStats> {
 		colDate.setMinWidth(i);
 		colDate.setMaxWidth(i);
 		colDate.setPrefWidth(i);
-		i=60;
+		i = 60;
 		colNF.setMinWidth(i);
 		colNF.setMaxWidth(i);
 		colNF.setPrefWidth(i);

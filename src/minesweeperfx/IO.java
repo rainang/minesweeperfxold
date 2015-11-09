@@ -4,9 +4,9 @@ import java.io.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class IO {
+import static minesweeperfx.Constants.DIRECTORY;
 
-	public static final String DIRECTORY = System.getenv("APPDATA") + "\\MinesweeperFX\\";
+public class IO {
 
 	public static void write(String filename, ObservableList<String> lines) {
 		PrintWriter pw;
