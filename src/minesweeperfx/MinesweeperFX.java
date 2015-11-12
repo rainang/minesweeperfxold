@@ -108,6 +108,7 @@ public class MinesweeperFX extends Application {
 		MENU_BAR.nf.selectedProperty().bindBidirectional(getNFProperty());
 		MENU_BAR.showFlags.selectedProperty().bindBidirectional(getShowFlagCountProperty());
 		MENU_BAR.showTimer.selectedProperty().bindBidirectional(getShowTimerProperty());
+		MENU_BAR.showMinutes.selectedProperty().bindBidirectional(getShowMinutesProperty());
 
 		MENU_BAR.difficulty[0].setOnAction(a -> setDifficulty(0));
 		MENU_BAR.difficulty[1].setOnAction(a -> setDifficulty(1));

@@ -5,6 +5,8 @@ import javafx.animation.Timeline;
 import javafx.beans.property.*;
 import javafx.util.Duration;
 
+import static minesweeperfx.Options.getShowMinutesProperty;
+
 public class Timer {
 
 	private final LongProperty   longTime      = new SimpleLongProperty(-1);
@@ -60,6 +62,8 @@ public class Timer {
 
 	@Override
 	public final String toString() {
-		return String.format("%02d:%02d:%02d", longTime.get()/100/60, longTime.get()/100%60, longTime.get()%100);
+		if(getShowMinutesProperty().get())
+			return String.format("%02d:%02d:%02d", longTime.get()/100/60, longTime.get()/100%60, longTime.get()%100);
+		return String.format("%03d:%02d", longTime.get()/100, longTime.get()%100);
 	}
 }

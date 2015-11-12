@@ -20,6 +20,7 @@ public class Options {
 
 	private static final BooleanProperty showFlagCount = new SimpleBooleanProperty();
 	private static final BooleanProperty showTimer     = new SimpleBooleanProperty();
+	private static final BooleanProperty showMinutes   = new SimpleBooleanProperty();
 	
 	public static final int BORDER_SIZE    = 4;
 	public static final int BORDER_PADDING = 5;
@@ -42,6 +43,10 @@ public class Options {
 	
 	public static BooleanProperty getShowTimerProperty() {
 		return showTimer;
+	}
+
+	public static BooleanProperty getShowMinutesProperty() {
+		return showMinutes;
 	}
 	
 	public static int getColumns() {

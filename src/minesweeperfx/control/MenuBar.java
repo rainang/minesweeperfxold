@@ -25,6 +25,7 @@ public class MenuBar extends javafx.scene.control.MenuBar {
 	public final CheckMenuItem nf        = new CheckMenuItem("No Flagging");
 	public final CheckMenuItem showFlags = new CheckMenuItem("Show Flag Count");
 	public final CheckMenuItem showTimer = new CheckMenuItem("Show Timer");
+	public final CheckMenuItem showMinutes = new CheckMenuItem("Show Minutes");
 
 	public final Label          label          = new Label("Tile Size");
 	public final Slider         slider         = new Slider(24, 36, 30);
@@ -52,7 +53,7 @@ public class MenuBar extends javafx.scene.control.MenuBar {
 
 		file.getItems().addAll(newGame, restartGame, new SeparatorMenuItem(), pauseGame);
 		options.getItems()
-			   .addAll(difficulty[0], difficulty[1], difficulty[2], new SeparatorMenuItem(), nf, showFlags, showTimer,
+			   .addAll(difficulty[0], difficulty[1], difficulty[2], new SeparatorMenuItem(), nf, showFlags, showTimer, showMinutes,
 					   new SeparatorMenuItem(), tileSizeSlider);
 		profile.getItems().add(viewProfile);
 		getMenus().addAll(file, options, profile);
