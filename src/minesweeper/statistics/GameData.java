@@ -24,7 +24,7 @@ public class GameData implements Contractible, Comparable<GameData> {
 	public long date;
 
 	public byte[] board;
-	
+
 	public GameData(
 			String player, Difficulty difficulty, boolean nf, long score, long date, int actions, int clicks,
 			int[] boardData, byte[] board) {
@@ -65,7 +65,7 @@ public class GameData implements Contractible, Comparable<GameData> {
 		bb.putInt((int)score).putLong(date).put(board);
 		return bb.array();
 	}
-	
+
 	@Override
 	public void fromBytes(byte[] bytes) {
 		ByteBuffer bb = ByteBuffer.wrap(bytes);

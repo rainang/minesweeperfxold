@@ -13,9 +13,9 @@ import minesweeper.io.Contractible;
 import static minesweeper.io.Contractible.*;
 
 public class DifficultyStats implements Contractible, Observable {
-	
+
 	private Difficulty difficulty;
-	
+
 	private int flagType;
 
 	private int gamesWon;
@@ -28,11 +28,11 @@ public class DifficultyStats implements Contractible, Observable {
 	private final List<InvalidationListener> listeners = new ArrayList<>();
 
 	private DifficultyStats() {}
-	
+
 	public DifficultyStats(int[] stats) {
 		this.difficulty = Difficulty.values()[stats[0]];
 		this.flagType = stats[1];
-		
+
 		gamesWon = stats[2];
 		gamesLost = stats[3];
 		currentWinningStreak = stats[4];
@@ -40,7 +40,7 @@ public class DifficultyStats implements Contractible, Observable {
 		currentLosingStreak = stats[6];
 		longestLosingStreak = stats[7];
 	}
-	
+
 	public DifficultyStats(byte[] bytes) {
 		fromBytes(bytes);
 	}
@@ -139,7 +139,7 @@ public class DifficultyStats implements Contractible, Observable {
 		return Profile.MAIN.highs.stream().filter(gs -> gs.difficulty == difficulty && (gs.nf ? 1 : 0) == flagType)
 								 .collect(Collectors.toList());
 	}
-	
+
 	public void addGamePlayed(boolean win) {
 		if(win) {
 			gamesWon++;
@@ -156,14 +156,14 @@ public class DifficultyStats implements Contractible, Observable {
 		}
 		listeners.forEach(l -> l.invalidated(this));
 	}
-	
+
 	@Override
 	public byte[] toBytes() {
 		return merge(new byte[] { (byte)difficulty.id, (byte)flagType, }, contract(gamesWon), contract(gamesLost),
 					 contract(currentWinningStreak), contract(longestWinningStreak), contract(currentLosingStreak),
 					 contract(longestLosingStreak));
 	}
-	
+
 	@Override
 	public void fromBytes(byte[] bytes) {
 		difficulty = Difficulty.values()[bytes[0]];

@@ -9,11 +9,11 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.scene.control.*;
 import javafx.util.Callback;
-import minesweeper.Formatter;
 import minesweeper.game.Config;
 import minesweeper.statistics.GameData;
 import minesweeper.statistics.Profile;
 
+import static minesweeper.Formatter.*;
 import static minesweeper.MinesweeperFX.STYLE;
 
 public class Table extends TableView<GameData> {
@@ -44,7 +44,7 @@ public class Table extends TableView<GameData> {
 	private final ObjectProperty<Predicate<GameData>> filter;
 
 	private final StringProperty details;
-	
+
 	public Table(IntegerProperty tabIndex1, IntegerProperty tabIndex2, StringProperty details) {
 		FilteredList<GameData> filteredData = new FilteredList<>(Profile.HIGH_SCORES);
 		setItems(filteredData.sorted());
@@ -63,8 +63,11 @@ public class Table extends TableView<GameData> {
 		ColumnName colName = new ColumnName();
 		ColumnDate colDate = new ColumnDate();
 
-		Column<String> colScore = new Column<>("Score", tipScore, 60,
-											   p -> Formatter.getFormattedScoreProperty(p.getValue().score));
+		Column<String> colScore = new Column<>("Score", tipScore, 60, p -> {
+			StringProperty property = new SimpleStringProperty(formatScore(p.getValue().score));
+			listenToScoreFormatChange(() -> property.set(formatScore(p.getValue().score)));
+			return property;
+		});
 		colScore.setContextMenu(MenuBar.contextMenu("Minutes", "Milliseconds"));
 		colScore.setMaxWidth(Integer.MAX_VALUE);
 		colScore.setResizable(true);
@@ -87,11 +90,14 @@ public class Table extends TableView<GameData> {
 		Column<Number> cAct = new Column<>("Actions", tipAct, 60, p -> new SimpleIntegerProperty(p.getValue()
 																										 .actions));
 		Column<Number> cClk = new Column<>("Clicks", tipClk, 60, p -> new SimpleIntegerProperty(p.getValue().clicks));
-		Column<Number> cIOE = new Column<>("IOE", tipIOE, 60, p -> new SimpleDoubleProperty(p.getValue().getIOE()));
-		Column<Number> c3BVs = new Column<>("3BV/s", tip3BVs, 60,
-											p -> new SimpleDoubleProperty(p.getValue().get3BVs()));
-		Column<Number> cRQP = new Column<>("RQP", tipRQP, 60, p -> new SimpleDoubleProperty(p.getValue().getRQP()));
-		Column<Number> cIOS = new Column<>("IOS", tipIOS, 60, p -> new SimpleDoubleProperty(p.getValue().getIOS()));
+		Column<String> cIOE = new Column<>("IOE", tipIOE, 60,
+										   p -> new SimpleStringProperty(formatDouble(p.getValue().getIOE())));
+		Column<String> c3BVs = new Column<>("3BV/s", tip3BVs, 60,
+											p -> new SimpleStringProperty(formatDouble(p.getValue().get3BVs())));
+		Column<String> cRQP = new Column<>("RQP", tipRQP, 60,
+										   p -> new SimpleStringProperty(formatDouble(p.getValue().getRQP())));
+		Column<String> cIOS = new Column<>("IOS", tipIOS, 60,
+										   p -> new SimpleStringProperty(formatDouble(p.getValue().getIOS())));
 
 		NestedColumn colBoard = new NestedColumn("Board", c3bv, cOps, cIsl);
 		NestedColumn colEfficiency = new NestedColumn("Efficiency", cAct, cClk, cIOE);
@@ -110,7 +116,7 @@ public class Table extends TableView<GameData> {
 		Config.boolBind("Efficiency", colEfficiency.visibleProperty());
 		Config.boolBind("Speed", colSpeed.visibleProperty());
 		focusedProperty().addListener(a -> setFocused(false));
-		setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		setColumnResizePolicy(CONSTRAINED_RESIZE_POLICY);
 		setStyle(STYLE);
 
 		widthProperty().addListener((a, b, c) -> {
@@ -214,7 +220,7 @@ public class Table extends TableView<GameData> {
 			getColumns().addAll(columns);
 		}
 	}
-	
+
 	public class Column<T> extends TableColumn<GameData, T> {
 
 		public Column(String name) {

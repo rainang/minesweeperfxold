@@ -16,21 +16,21 @@ import minesweeper.statistics.Profile;
 
 public class MinesweeperFX extends Application {
 
-	public static final String VERSION = "2.0.0";
+	public static final String VERSION = "2.1.0";
 
 	public static final String STYLE = "-fx-font-family: \"Calibri\"; -fx-alignment: CENTER";
 
 	public static final Image ICON = new Image(MinesweeperFX.class.getResourceAsStream("bomb.png"));
-	
+
 	private static final int TITLE_BAR_HEIGHT = 23;
 	private static final int STAGE_INSETS     = 3;
 
 	private static boolean initialized;
 
 	private static Window window;
-	
+
 	public static void main(String[] args) {
-		new Config();
+		Config.init();
 		IO.init();
 		launch(args);
 	}

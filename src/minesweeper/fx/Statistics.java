@@ -12,10 +12,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import minesweeper.Formatter;
 import minesweeper.MinesweeperFX;
 import minesweeper.statistics.DifficultyStats;
 import minesweeper.statistics.Profile;
+
+import static minesweeper.Formatter.*;
 
 public class Statistics extends HBox implements InvalidationListener {
 
@@ -47,10 +48,10 @@ public class Statistics extends HBox implements InvalidationListener {
 			c.addListener(this);
 			invalidated(c);
 		});
-		Formatter.addScoreFormatListener(f -> {
-			setText(best, f.format(currentPage.get().getBestTime()));
-			setText(worst, f.format(currentPage.get().getWorstTime()));
-			setText(aveTime, f.format(currentPage.get().getAverageTime()));
+		listenToScoreFormatChange(() -> {
+			setText(best, formatScore(currentPage.get().getBestTime()));
+			setText(worst, formatScore(currentPage.get().getWorstTime()));
+			setText(aveTime, formatScore(currentPage.get().getAverageTime()));
 		});
 		currentPage.set(Profile.MAIN.getStats(i1.get(), i2.get()));
 		i1.addListener(o -> {
@@ -106,16 +107,16 @@ public class Statistics extends HBox implements InvalidationListener {
 		setText(won, ds.getGamesWon() + "");
 		setText(lost, ds.getGamesLost() + "");
 		setText(play, ds.getGamesPlayed() + "");
-		setText(winRate, Formatter.formatToPercent(ds.getWinRate()));
-		setText(best, Formatter.formatToScore(ds.getBestTime()));
-		setText(worst, Formatter.formatToScore(ds.getWorstTime()));
+		setText(winRate, formatDouble(ds.getWinRate()*100) + "%");
+		setText(best, formatScore(ds.getBestTime()));
+		setText(worst, formatScore(ds.getWorstTime()));
 
-		setText(aveTime, Formatter.formatToScore(ds.getAverageTime()));
-		setText(ave3BV, Formatter.formatToRatio(ds.getAverage3BV()));
-		setText(ave3BVs, Formatter.formatToRatio(ds.getAverage3BVs()));
-		setText(aveIOE, Formatter.formatToRatio(ds.getAverageIOE()));
-		setText(aveRQP, Formatter.formatToRatio(ds.getAverageRQP()));
-		setText(aveIOS, Formatter.formatToRatio(ds.getAverageIOS()));
+		setText(aveTime, formatScore(ds.getAverageTime()));
+		setText(ave3BV, formatDouble(ds.getAverage3BV()));
+		setText(ave3BVs, formatDouble(ds.getAverage3BVs()));
+		setText(aveIOE, formatDouble(ds.getAverageIOE()));
+		setText(aveRQP, formatDouble(ds.getAverageRQP()));
+		setText(aveIOS, formatDouble(ds.getAverageIOS()));
 
 		if(ds instanceof DifficultyStats.Merged) {
 			cws.setVisible(false);

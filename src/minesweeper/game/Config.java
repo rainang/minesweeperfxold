@@ -15,18 +15,18 @@ import minesweeper.io.Readable;
 import minesweeper.io.Writable;
 
 public class Config implements Writable, Readable {
-	
+
 	private static final Map<String, BooleanProperty>  MAP_BOOL   = new HashMap<>();
 	private static final Map<String, Property<Number>> MAP_NUMBER = new HashMap<>();
 	private static final Map<String, StringProperty>   MAP_STRING = new HashMap<>();
 
 	private static Config INSTANCE;
-	
-	public Config() {
-		addBool(this, "Timer", "Minutes", "Milliseconds", "Grid", "Mines", "Highlight", "Pause", "No Flagging",
+
+	public static void init() {
+		addBool("Timer", "Minutes", "Milliseconds", "Grid", "Mines", "Highlight", "Pause", "No Flagging",
 				"Efficiency", "Speed");
-		addDouble(this, "Resolution");
-		addString(this, "Date Format", "Name Filter");
+		addDouble("Resolution");
+		addString("Date Format", "Name Filter");
 		MAP_BOOL.get("Timer").set(true);
 		MAP_BOOL.get("Grid").set(true);
 		MAP_BOOL.get("Highlight").set(true);
@@ -34,82 +34,82 @@ public class Config implements Writable, Readable {
 		MAP_BOOL.get("Efficiency").set(true);
 		MAP_BOOL.get("Speed").set(true);
 		MAP_NUMBER.get("Resolution").setValue(30);
-		INSTANCE = this;
+		INSTANCE = new Config();
 	}
-	
-	private static void addBool(Config config, String... names) {
-		Arrays.stream(names).forEach(name -> MAP_BOOL.put(name, new SimpleBooleanProperty(config, name)));
+
+	private static void addBool(String... names) {
+		Arrays.stream(names).forEach(name -> MAP_BOOL.put(name, new SimpleBooleanProperty(null, name)));
 	}
-	
+
 	public static boolean bool(String name) {
 		if(!MAP_BOOL.containsKey(name))
 			System.out.println("Boolean property does not exist: '" + name + "'");
 		return MAP_BOOL.get(name).get();
 	}
-	
+
 	public static void boolBind(String name, BooleanProperty property) {
 		if(!MAP_BOOL.containsKey(name))
 			System.out.println("Boolean property does not exist: '" + name + "'");
 		property.bindBidirectional(MAP_BOOL.get(name));
 	}
-	
+
 	public static void boolListen(String name, ChangeListener<? super Boolean> listener) {
 		if(!MAP_BOOL.containsKey(name))
 			System.out.println("Boolean property does not exist: '" + name + "'");
 		MAP_BOOL.get(name).addListener(listener);
 	}
-	
-	private static void addString(Config config, String... names) {
-		Arrays.stream(names).forEach(name -> MAP_STRING.put(name, new SimpleStringProperty(config, name, "")));
+
+	private static void addString(String... names) {
+		Arrays.stream(names).forEach(name -> MAP_STRING.put(name, new SimpleStringProperty(null, name, "")));
 	}
-	
+
 	public static String string(String name) {
 		if(!MAP_STRING.containsKey(name))
 			System.out.println("String property does not exist: '" + name + "'");
 		return MAP_STRING.get(name).get();
 	}
-	
+
 	public static void stringBind(String name, StringProperty property) {
 		if(!MAP_STRING.containsKey(name))
 			System.out.println("String property does not exist: '" + name + "'");
 		property.bindBidirectional(MAP_STRING.get(name));
 	}
-	
-	private static void addDouble(Config config, String... names) {
-		Arrays.stream(names).forEach(name -> MAP_NUMBER.put(name, new SimpleDoubleProperty(config, name)));
+
+	private static void addDouble(String... names) {
+		Arrays.stream(names).forEach(name -> MAP_NUMBER.put(name, new SimpleDoubleProperty(null, name)));
 	}
-	
+
 	public static Number number(String name) {
 		if(!MAP_NUMBER.containsKey(name))
 			System.out.println("Number property does not exist: '" + name + "'");
 		return MAP_NUMBER.get(name).getValue();
 	}
-	
+
 	public static int getInt(String name) {
 		return number(name).intValue();
 	}
-	
+
 	public static void numberBind(String name, Property<Number> property) {
 		if(!MAP_NUMBER.containsKey(name))
 			System.out.println("Number property does not exist: '" + name + "'");
 		property.bindBidirectional(MAP_NUMBER.get(name));
 	}
-	
+
 	public static void numberListen(String name, ChangeListener<? super Number> listener) {
 		if(!MAP_NUMBER.containsKey(name))
 			System.out.println("Number property does not exist: '" + name + "'");
 		MAP_NUMBER.get(name).addListener(listener);
 	}
-	
+
 	public static void load() {
-		if(!IO.FILE_CONFIG.exists())
-			INSTANCE.read(IO.PATH_CFG);
-		else
+		if(IO.OLD_FILE_CONFIG.exists())
 			loadSettings();
+		else
+			INSTANCE.read(IO.FILE_CFG);
 	}
-	
+
 	public static void save() {
-		INSTANCE.write(IO.PATH_CFG);
+		INSTANCE.write(IO.FILE_CFG);
 	}
 
 	@Override
@@ -159,7 +159,7 @@ public class Config implements Writable, Readable {
 
 	private static void loadSettings() {
 		Map<String, String> hashMap = new HashMap<>();
-		IO.read(IO.FILE_CONFIG.getAbsolutePath())
+		IO.read(IO.OLD_FILE_CONFIG)
 		  .forEach(s -> hashMap.put(s.substring(0, s.indexOf(":")), s.substring(s.indexOf(":") + 1)));
 
 		Difficulty.set(Difficulty.valueOf(hashMap.get("difficulty")));

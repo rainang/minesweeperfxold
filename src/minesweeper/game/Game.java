@@ -14,9 +14,9 @@ import static minesweeper.game.GameState.*;
 import static minesweeper.game.InputState.*;
 
 public class Game {
-	
+
 	private static Game INSTANCE;
-	
+
 	public final Board board = new Board();
 	public final Clock clock = new Clock();
 
@@ -30,15 +30,15 @@ public class Game {
 	private int tilesOpen;
 	private int actions;
 	private int clicks;
-	
+
 	public Game() {
 		INSTANCE = this;
 		listenToInput((a, b, c) -> onInputEvent(c));
 		listenToGame((a, b, c) -> onGameEvent(b, c));
 	}
-	
+
 	private void onInputEvent(InputState input) {
-		focus = board.getTile(inputX(), inputY());
+		focus = board.getTile(getX(), getY());
 		GameState state = getGameState();
 
 		if(state == PAUSE)
@@ -63,7 +63,7 @@ public class Game {
 		}
 		setIdle();
 	}
-	
+
 	private void onGameEvent(GameState oldEvent, GameState event) {
 		switch(event) {
 		case NEW:
@@ -96,7 +96,7 @@ public class Game {
 			break;
 		}
 	}
-	
+
 	private void newGame(boolean restart) {
 		board.reset(restart);
 		minesRemaining.set(Difficulty.mines());
@@ -107,7 +107,7 @@ public class Game {
 		actions = 0;
 		clicks = 0;
 	}
-	
+
 	private void moveMines() {
 		List<Board.Tile> toMove = board.getNeighborsOf(focus, null);
 		int i = (int)toMove.stream().filter(Board.Tile::isMine).peek(Board.Tile::removeMine).count();
@@ -118,7 +118,7 @@ public class Game {
 		Collections.shuffle(list);
 		list.subList(0, i).forEach(Board.Tile::setMine);
 	}
-	
+
 	private void gameOver(boolean win) {
 		board.listTiles().stream().peek(Board.Tile::validate).filter(Board.Tile::canOpen).forEach(t -> t.setOpen
 				(!win));
@@ -127,7 +127,7 @@ public class Game {
 												   System.currentTimeMillis(), actions, clicks,
 												   board.calculateBoardData(), board.toBytes()), win);
 	}
-	
+
 	private void flag() {
 		if(Config.bool("No Flagging"))
 			return;
@@ -138,13 +138,13 @@ public class Game {
 			minesRemaining.set(minesRemaining.get() + (focus.setFlag() ? -1 : 1));
 		}
 	}
-	
+
 	private void open() {
 		clicks++;
 		if(openTile(focus))
 			actions++;
 	}
-	
+
 	private void chord() {
 		clicks++;
 		List<Board.Tile> list = board.getNeighborsOf(focus, Board.Tile::canOpen);
@@ -153,7 +153,7 @@ public class Game {
 			list.forEach(this::openTile);
 		}
 	}
-	
+
 	private boolean openTile(Board.Tile tile) {
 		if(!tile.canOpen())
 			return false;
@@ -170,11 +170,11 @@ public class Game {
 	public void listenToRemainingMines(ChangeListener<? super Number> listener) {
 		minesRemaining.addListener(listener);
 	}
-	
+
 	public int getRemainingMines() {
 		return minesRemaining.get();
 	}
-	
+
 	public static Game get() {
 		return INSTANCE;
 	}

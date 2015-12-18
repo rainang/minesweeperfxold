@@ -18,13 +18,13 @@ import static minesweeper.game.GameState.*;
 import static minesweeper.game.InputState.*;
 
 public class TilePane extends javafx.scene.layout.TilePane {
-	
+
 	private Tile[][] tiles;
-	
+
 	private final ObjectProperty<Tile> focusedTile = new SimpleObjectProperty<>();
-	
+
 	private boolean comboFlag;
-	
+
 	public TilePane() {
 		tiles = new Tile[30][16];
 		for(int y = 0; y < 16; y++)
@@ -32,7 +32,7 @@ public class TilePane extends javafx.scene.layout.TilePane {
 				tiles[x][y] = new Tile(Game.get().board.getTile(x, y));
 				getChildren().add(tiles[x][y]);
 			}
-		
+
 		setBorder(MAIN_BORDER);
 		setOnMouseMoved(this::setMouseoverTile);
 		setOnMouseDragged(this::setMouseoverTile);
@@ -58,10 +58,10 @@ public class TilePane extends javafx.scene.layout.TilePane {
 		if(to != null)
 			to.setFocus(true);
 	}
-	
+
 	private void setMouseoverTile(MouseEvent e) {
 		setCursor(Cursor.DEFAULT);
-		
+
 		int d = Config.getInt("Resolution");
 		int x = (int)((e.getX() - MAIN_BORDER_WIDTH)/d);
 		int y = (int)((e.getY() - MAIN_BORDER_WIDTH)/d);
@@ -70,11 +70,11 @@ public class TilePane extends javafx.scene.layout.TilePane {
 		else
 			focusedTile.set(null);
 	}
-	
+
 	private int focusX() {
 		return focusedTile.get() == null ? 0 : focusedTile.get().x;
 	}
-	
+
 	private int focusY() {
 		return focusedTile.get() == null ? 0 : focusedTile.get().y;
 	}
@@ -110,17 +110,17 @@ public class TilePane extends javafx.scene.layout.TilePane {
 			setInput(focusX(), focusY(), FLAG);
 		}
 	}
-	
+
 	private void handleMouseInput(MouseEvent event) {
 		setCursor(Cursor.DEFAULT);
 		if(focusedTile.get() == null)
 			return;
 		boolean a = event.isPrimaryButtonDown();
 		boolean b = event.isSecondaryButtonDown();
-		
+
 		if(event.getButton() != MouseButton.PRIMARY && event.getButton() != MouseButton.SECONDARY)
 			return;
-		
+
 		if(event.getEventType() == MouseEvent.MOUSE_PRESSED) {
 			if(a && b) {
 				comboFlag = true;
@@ -138,7 +138,7 @@ public class TilePane extends javafx.scene.layout.TilePane {
 			}
 		}
 	}
-	
+
 	private void setDifficulty() {
 		setPrefColumns(Difficulty.columns());
 		setPrefRows(Difficulty.rows());
@@ -148,7 +148,7 @@ public class TilePane extends javafx.scene.layout.TilePane {
 				getChildren().add(tiles[x][y]);
 		setResolution();
 	}
-	
+
 	private void setResolution() {
 		double resolution = Config.number("Resolution").doubleValue();
 		Insets insets = getBorder().getInsets();
@@ -165,11 +165,11 @@ public class TilePane extends javafx.scene.layout.TilePane {
 
 		public final int x;
 		public final int y;
-		
+
 		public Tile(Board.Tile tile) {
 			this.x = tile.x;
 			this.y = tile.y;
-			
+
 			setBorder(TILE_BORDER);
 			setAlignment(Pos.CENTER);
 			tile.onStateChanged(this::setTileState);
@@ -180,20 +180,20 @@ public class TilePane extends javafx.scene.layout.TilePane {
 				else if(!c && getBorder() == TILE_GRID_LINES)
 					setBorder(null);
 			});
-			
+
 			setResolution();
 		}
-		
+
 		private void setFocus(boolean b) {
 			setBackground(b && (isGameOver() || Config.bool("Highlight")) ? TILE_HIGHLIGHT : MAIN_BACKGROUND);
 		}
-		
+
 		private void setTileState(ObservableValue<? extends TileState> o, TileState oldState, TileState newState) {
 			setBorder(newState.hasBorder ? TILE_BORDER : Config.bool("Grid") ? TILE_GRID_LINES : null);
 			setText(newState.text);
 			setTextFill(newState.color);
 		}
-		
+
 		private void setResolution() {
 			int resolution = Config.getInt("Resolution");
 			setFont(getTileFont(resolution));

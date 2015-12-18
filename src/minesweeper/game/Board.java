@@ -10,17 +10,17 @@ import minesweeper.io.Readable;
 import minesweeper.io.Writable;
 
 public class Board implements Writable, Readable {
-	
+
 	/** The 2-dimensional array of all tiles on this board */
 	private final Tile[][] tileset = new Tile[30][16];
-	
+
 	/** The constructor of {@link Board} */
 	protected Board() {
 		for(int y = 0; y < 16; y++)
 			for(int x = 0; x < 30; x++)
 				tileset[x][y] = new Tile(x, y);
 	}
-	
+
 	/** Lists all tiles on this board */
 	protected List<Tile> listTiles() {
 		List<Tile> list = new ArrayList<>();
@@ -30,7 +30,7 @@ public class Board implements Writable, Readable {
 				list.add(getTile(c, r));
 		return list;
 	}
-	
+
 	/**
 	 * Retrieves a tile on this board depending on the current {@link Difficulty}. If the difficulty is
 	 * <code>null</code>, this will return a {@link Tile} regardless of the difficulty. If the given parameters
@@ -51,7 +51,7 @@ public class Board implements Writable, Readable {
 			return null;
 		return tileset[x][y];
 	}
-	
+
 	/**
 	 * Lists all tiles surrounding the {@link Tile} parameter with a given {@link Predicate} as filter
 	 *
@@ -175,15 +175,15 @@ public class Board implements Writable, Readable {
 	}
 
 	public class Tile implements Comparable<Tile> {
-		
+
 		/** The tile's x position on the grid */
 		public final int x;
 		/** The tile's y position on the grid */
 		public final int y;
-		
+
 		/** The tile's state property */
 		private final ObjectProperty<TileState> state = new SimpleObjectProperty<>();
-		
+
 		/** True if the tile is revealed */
 		private boolean open;
 		/** True if the tile is flagged */
@@ -194,12 +194,12 @@ public class Board implements Writable, Readable {
 		private boolean hide;
 		/** True if the tile is the losing tile or is an incorrectly flagged tile */
 		private boolean lose;
-		
+
 		/** The number of mines near this tile. Max number is 8. */
 		private int mineCounter;
 		/** The number of flags near this tile. Max number is 8. */
 		private int flagCounter;
-		
+
 		/**
 		 * The constructor of {@link Tile}
 		 *
@@ -212,7 +212,7 @@ public class Board implements Writable, Readable {
 			this.x = x;
 			this.y = y;
 		}
-		
+
 		/**
 		 * Reveals or covers this {@link Tile} depending on the value of parameter <code>b</code>.
 		 * <p>
@@ -227,7 +227,7 @@ public class Board implements Writable, Readable {
 			open = b;
 			onStateChanged();
 		}
-		
+
 		/**
 		 * Sets a flag on this {@link Tile} if no flag is present; otherwise, removes flag.
 		 * <p>
@@ -266,7 +266,7 @@ public class Board implements Writable, Readable {
 			getNeighborsOf(this, this::isNotSelf).forEach(e -> e.updateMineCounter(-1));
 			onStateChanged();
 		}
-		
+
 		/**
 		 * Hides or shows this {@link Tile} depending on the value of parameter <code>b</code>.
 		 * <p>
@@ -282,37 +282,37 @@ public class Board implements Writable, Readable {
 			hide = b;
 			onStateChanged();
 		}
-		
+
 		/** @return <code>true</code> if the tile is revealed */
 		public boolean isOpen() {
 			return open;
 		}
-		
+
 		/** @return <code>true</code> if the tile has a mine */
 		protected boolean isMine() {
 			return mine;
 		}
-		
+
 		/** @return <code>true</code> if the tile has no mine */
 		protected boolean isNotMine() {
 			return !mine;
 		}
-		
+
 		/** @return <code>true</code> if the tile is an opening tile */
 		protected boolean isOpening() {
 			return !mine && mineCounter == 0;
 		}
-		
+
 		/** @return <code>true</code> if the tile is an island tile */
 		protected boolean isIsland() {
 			return !isOpening() && getNeighborsOf(this, t -> isNotSelf(t) && t.isOpening()).size() == 0;
 		}
-		
+
 		/** @return True if this tile is not flagged nor opened */
 		protected boolean canOpen() {
 			return !flag && !open;
 		}
-		
+
 		/**
 		 * @return True if this tile is open, has at least 1 mine nearby, and has equal amount of mines and flags
 		 * nearby
@@ -335,17 +335,17 @@ public class Board implements Writable, Readable {
 		protected boolean isNotSelf(Tile tile) {
 			return !this.equals(tile);
 		}
-		
+
 		/** @return The number of mines near this tile. Max number is 8. */
 		protected int getMinesNearby() {
 			return mineCounter;
 		}
-		
+
 		/** Adds a {@link ChangeListener} which will be notified whenever the tile's state changes */
 		public void onStateChanged(ChangeListener<? super TileState> listener) {
 			state.addListener(listener);
 		}
-		
+
 		/**
 		 * Validates this tile. Checks whether or not this {@link Tile} is a losing tile. A tile is considered a losing
 		 * tile if
@@ -361,7 +361,7 @@ public class Board implements Writable, Readable {
 			lose = b;
 			onStateChanged();
 		}
-		
+
 		/** Sets the current state of the {@link Tile} */
 		private void onStateChanged() {
 			if(hide)
@@ -405,7 +405,7 @@ public class Board implements Writable, Readable {
 			else
 				state.set(TileState.DEFAULT);
 		}
-		
+
 		/**
 		 * Increases or decreases the {@link Tile#flagCounter} by 1 depending on the value of parameter <code>i</code>.
 		 * A value greater than 0 will increase the counter by 1; otherwise, decreases the counter by 1
@@ -416,7 +416,7 @@ public class Board implements Writable, Readable {
 		private void updateFlagCounter(int i) {
 			flagCounter += i > 0 ? 1 : -1;
 		}
-		
+
 		/**
 		 * Increases or decreases the {@link Tile#mineCounter} by 1 depending on the value of parameter <code>i</code>.
 		 * A value greater than 0 will increase the counter by 1; otherwise, decreases the counter by 1
@@ -427,7 +427,7 @@ public class Board implements Writable, Readable {
 		private void updateMineCounter(int i) {
 			mineCounter += i > 0 ? 1 : -1;
 		}
-		
+
 		/**
 		 * Resets all fields of this {@link Tile}.
 		 * <p>
@@ -452,7 +452,7 @@ public class Board implements Writable, Readable {
 			lose = false;
 			onStateChanged();
 		}
-		
+
 		@Override
 		public int compareTo(Tile o) {
 			return 0;

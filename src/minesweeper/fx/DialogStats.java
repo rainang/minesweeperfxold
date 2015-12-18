@@ -19,21 +19,21 @@ import static javafx.scene.control.ButtonBar.ButtonData.CANCEL_CLOSE;
 import static minesweeper.MinesweeperFX.STYLE;
 
 public class DialogStats extends Dialog<byte[]> {
-	
+
 	private final IntegerProperty difficultyIndex = new SimpleIntegerProperty();
 	private final IntegerProperty flagIndex       = new SimpleIntegerProperty();
 
 	protected TabsPane tabsPane = new TabsPane(difficultyIndex, flagIndex, widthProperty());
-	
+
 	protected DialogStats() {
 		Label label = new Label();
 		Statistics stats = new Statistics(difficultyIndex, flagIndex);
 		Table table = new Table(difficultyIndex, flagIndex, label.textProperty());
 		VBox tile = new VBox(tabsPane, stats, label);
-		
+
 		Difficulty.listen((a, b, c) -> difficultyIndex.set(c.id));
 		Config.boolListen("No Flagging", (a, b, c) -> flagIndex.set(c ? 1 : 0));
-		
+
 		setTitle("Profile : " + IO.MAIN_PROFILE);
 		setOnHidden(e -> tabsPane.getSelectionModel().select(-1));
 		widthProperty().addListener((a, b, c) -> {
@@ -51,16 +51,16 @@ public class DialogStats extends Dialog<byte[]> {
 		});
 		setResultConverter(
 				c -> c.getButtonData() == CANCEL_CLOSE ? null : table.getSelectionModel().getSelectedItem().board);
-		
+
 		label.setTextFill(Color.GRAY);
 		label.setPadding(new Insets(5));
 		label.setMinHeight(60);
 		label.setMaxHeight(60);
-		
+
 		Button button = (Button)getDialogPane().lookupButton(ButtonType.APPLY);
 		button.setText("Load Board");
 		button.setVisible(false);
-		
+
 		table.getSelectionModel().selectedItemProperty()
 			 .addListener((a, b, c) -> button.setDisable(a.getValue() == null || a.getValue().board.length == 0));
 		tabsPane.getSelectionModel().selectedIndexProperty().addListener((a, b, c) -> {

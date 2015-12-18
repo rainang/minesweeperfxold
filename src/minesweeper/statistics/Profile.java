@@ -22,12 +22,12 @@ public class Profile implements Readable, Writable, Contractible {
 	public static final Map<String, Profile>     PROFILES    = new HashMap<>();
 	public static final Profile                  MAIN        = new Profile(System.getProperty("user.name"));
 	public static final ObservableList<GameData> HIGH_SCORES = FXCollections.observableArrayList();
-	
+
 	public final DifficultyStats[][]      stats = new DifficultyStats[4][3];
 	public final ObservableList<GameData> highs = FXCollections.observableArrayList();
 	public final String name;
 	public final String path;
-	
+
 	public Profile(String name) {
 		this.name = name;
 		this.path = IO.DIR_USER + name + ".dat";
@@ -35,19 +35,19 @@ public class Profile implements Readable, Writable, Contractible {
 	}
 
 	private void init() {
-		if(IO.FILE_CONFIG.exists())
+		if(IO.OLD_FILE_CONFIG.exists())
 			readStats();
 		else
 			read(path);
 	}
-	
+
 	public void addGameStats(GameData gameData, boolean win) {
 		if(win)
 			addGameStats(gameData);
 		stats[gameData.difficulty.id][gameData.nf ? 1 : 0].addGamePlayed(win);
 		write(path);
 	}
-	
+
 	public DifficultyStats getStats(int id, int flagType) {
 		return stats[id][flagType];
 	}
@@ -58,7 +58,7 @@ public class Profile implements Readable, Writable, Contractible {
 		HIGH_SCORES.sort(GameData::compareTo);
 		highs.sort(GameData::compareTo);
 	}
-	
+
 	@Override
 	public byte[] toBytes() {
 		List<Byte> dsBytes = new ArrayList<>();
@@ -70,7 +70,7 @@ public class Profile implements Readable, Writable, Contractible {
 		for(GameData gs : highs)
 			for(byte b : gs.toBytes())
 				gsBytes.add(b);
-		
+
 		dsBytes.addAll(gsBytes);
 		byte[] ss = new byte[dsBytes.size()];
 		for(int i = 0; i < dsBytes.size(); i++)
@@ -80,11 +80,17 @@ public class Profile implements Readable, Writable, Contractible {
 
 	@Override
 	public void fromBytes(byte[] bytes) {
+		if(bytes.length == 0)
+			System.out.println("Profile data for " + name + " not found.");
 		int aLength = 14;
 		for(int dif = 0, pass = 0; dif < 3; dif++)
 			for(int flag = 0; flag < 2; flag++, pass++) {
 				byte[] bs = new byte[aLength];
-				System.arraycopy(bytes, pass*aLength, bs, 0, aLength);
+				if(bytes.length == 0) {
+					bs[0] = (byte)dif;
+					bs[1] = (byte)flag;
+				} else
+					System.arraycopy(bytes, pass*aLength, bs, 0, aLength);
 				stats[dif][flag] = new DifficultyStats(bs);
 			}
 		stats[0][2] = new DifficultyStats.Merged(stats[BEGINNER.id][0], stats[BEGINNER.id][1]);
@@ -98,7 +104,7 @@ public class Profile implements Readable, Writable, Contractible {
 		stats[3][2] = new DifficultyStats.Merged(stats[BEGINNER.id][2], stats[INTERMEDIATE.id][2], stats[EXPERT
 				.id][2]);
 
-		if(bytes.length == 84)
+		if(bytes.length <= 84)
 			return;
 
 		ByteBuffer bb = ByteBuffer.wrap(Arrays.copyOfRange(bytes, aLength*6, bytes.length));
@@ -115,7 +121,7 @@ public class Profile implements Readable, Writable, Contractible {
 
 	private void readStats() {
 		System.out.println("Loading old");
-		List<String> list = IO.read(IO.FILE_STATS);
+		List<String> list = IO.read(IO.OLD_FILE_STATS);
 		if(list.isEmpty())
 			return;
 		list.stream().map(this::parse).collect(Collectors.toList()).forEach(e -> {
@@ -132,9 +138,9 @@ public class Profile implements Readable, Writable, Contractible {
 				.id][1]);
 		stats[3][2] = new DifficultyStats.Merged(stats[BEGINNER.id][2], stats[INTERMEDIATE.id][2], stats[EXPERT
 				.id][2]);
-		
-		list = IO.read(IO.FILE_HIGHS);
-		
+
+		list = IO.read(IO.OLD_FILE_HIGHS);
+
 		if(list.isEmpty())
 			return;
 		list.stream().map(this::parse).collect(Collectors.toList()).stream().map(l -> {
@@ -146,7 +152,7 @@ public class Profile implements Readable, Writable, Contractible {
 			return new GameData(name, difficulty, flagType == 1, score, date, 0, 0, new int[] { 0, 0, 0 }, null);
 		}).forEach(this::addGameStats);
 		write(path);
-		IO.FILE_CONFIG.delete();
+		IO.OLD_FILE_CONFIG.delete();
 	}
 
 	private List<String> parse(String s) {
