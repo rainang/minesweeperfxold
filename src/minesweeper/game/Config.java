@@ -23,8 +23,8 @@ public class Config implements Writable, Readable {
 	private static Config INSTANCE;
 
 	public static void init() {
-		addBool("Timer", "Minutes", "Milliseconds", "Grid", "Mines", "Highlight", "Pause", "No Flagging",
-				"Efficiency", "Speed");
+		addBool("Timer", "Minutes", "Milliseconds", "Grid", "Mines", "Highlight", "Pause", "No Flagging", "Efficiency",
+				"Speed");
 		addDouble("Resolution");
 		addString("Date Format", "Name Filter");
 		MAP_BOOL.get("Timer").set(true);

@@ -17,8 +17,8 @@ public class TabsPane extends TabPane {
 		this(0, difficultyIndex, flagIndex, width);
 	}
 
-	private TabsPane(int id, IntegerProperty difficultyIndex, IntegerProperty flagIndex, ReadOnlyDoubleProperty
-			width) {
+	private TabsPane(
+			int id, IntegerProperty difficultyIndex, IntegerProperty flagIndex, ReadOnlyDoubleProperty width) {
 		super(Arrays.stream(strings[id]).map(Tab::new).peek(tab -> tab.setClosable(false)).toArray(Tab[]::new));
 		if(id != 2)
 			getTabs().forEach(tab -> tab.setContent(new TabsPane(id + 1, difficultyIndex, flagIndex, width)));
