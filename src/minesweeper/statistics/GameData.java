@@ -1,7 +1,7 @@
 package minesweeper.statistics;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
+import java.util.stream.IntStream;
 import minesweeper.game.Difficulty;
 import minesweeper.io.Contractible;
 
@@ -59,9 +59,8 @@ public class GameData implements Contractible, Comparable<GameData> {
 	public byte[] toBytes() {
 		ByteBuffer bb = ByteBuffer.allocate(25 + board.length);
 
-		Arrays.stream(new int[] { board.length, difficulty.id, nf ? 1 : 0 }).forEach(i -> bb.put((byte)i));
-		Arrays.stream(new int[] { b3v, openings, islands, actions, clicks })
-			  .mapToObj(i -> new byte[] { (byte)(i/128), (byte)(i%128) }).forEach(bb::put);
+		IntStream.of(board.length, difficulty.id, nf ? 1 : 0).forEach(i -> bb.put((byte)i));
+		IntStream.of(b3v, openings, islands, actions, clicks).forEach(i -> bb.put((byte)(i/128)).put((byte)(i%128)));
 		bb.putInt((int)score).putLong(date).put(board);
 		return bb.array();
 	}

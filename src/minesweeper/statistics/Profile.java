@@ -26,11 +26,11 @@ public class Profile implements Readable, Writable, Contractible {
 	public final DifficultyStats[][]      stats = new DifficultyStats[4][3];
 	public final ObservableList<GameData> highs = FXCollections.observableArrayList();
 	public final String name;
-	public final String path;
+	public final File   file;
 
 	public Profile(String name) {
 		this.name = name;
-		this.path = IO.DIR_USER + name + ".dat";
+		this.file = new File(IO.DIR_USER + name + ".dat");
 		PROFILES.put(name, this);
 	}
 
@@ -38,14 +38,14 @@ public class Profile implements Readable, Writable, Contractible {
 		if(IO.OLD_FILE_CONFIG.exists())
 			readStats();
 		else
-			read(path);
+			read(file);
 	}
 
 	public void addGameStats(GameData gameData, boolean win) {
 		if(win)
 			addGameStats(gameData);
 		stats[gameData.difficulty.id][gameData.nf ? 1 : 0].addGamePlayed(win);
-		write(path);
+		write(file);
 	}
 
 	public DifficultyStats getStats(int id, int flagType) {
@@ -151,7 +151,7 @@ public class Profile implements Readable, Writable, Contractible {
 			date = parseLong(l.get(3));
 			return new GameData(name, difficulty, flagType == 1, score, date, 0, 0, new int[] { 0, 0, 0 }, null);
 		}).forEach(this::addGameStats);
-		write(path);
+		write(file);
 		IO.OLD_FILE_CONFIG.delete();
 	}
 

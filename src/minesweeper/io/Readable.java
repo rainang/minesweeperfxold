@@ -4,11 +4,6 @@ import java.io.File;
 
 public interface Readable extends Contractible {
 
-	default void read(String path) {
-		if(path != null && !path.isEmpty())
-			fromBytes(IO.readBytes(new File(path)));
-	}
-
 	default void read(File file) {
 		if(file != null && !file.isDirectory() && file.exists())
 			fromBytes(IO.readBytes(file));

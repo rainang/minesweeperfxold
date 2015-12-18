@@ -1,16 +1,16 @@
 package minesweeper.statistics;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import minesweeper.game.Difficulty;
 import minesweeper.io.Contractible;
-
-import static minesweeper.io.Contractible.*;
 
 public class DifficultyStats implements Contractible, Observable {
 
@@ -159,21 +159,24 @@ public class DifficultyStats implements Contractible, Observable {
 
 	@Override
 	public byte[] toBytes() {
-		return merge(new byte[] { (byte)difficulty.id, (byte)flagType, }, contract(gamesWon), contract(gamesLost),
-					 contract(currentWinningStreak), contract(longestWinningStreak), contract(currentLosingStreak),
-					 contract(longestLosingStreak));
+		ByteBuffer bb = ByteBuffer.allocate(14);
+		bb.put((byte)difficulty.id).put((byte)flagType);
+		IntStream.of(gamesWon, gamesLost, currentWinningStreak, longestWinningStreak, currentLosingStreak,
+					 longestLosingStreak).forEach(i -> bb.put((byte)(i/128)).put((byte)(i%128)));
+		return bb.array();
 	}
 
 	@Override
 	public void fromBytes(byte[] bytes) {
-		difficulty = Difficulty.values()[bytes[0]];
-		flagType = bytes[1];
-		gamesWon = expand(new byte[] { bytes[2], bytes[3] });
-		gamesLost = expand(new byte[] { bytes[4], bytes[5] });
-		currentWinningStreak = expand(new byte[] { bytes[6], bytes[7] });
-		longestWinningStreak = expand(new byte[] { bytes[8], bytes[9] });
-		currentLosingStreak = expand(new byte[] { bytes[10], bytes[1] });
-		longestLosingStreak = expand(new byte[] { bytes[12], bytes[13] });
+		ByteBuffer bb = ByteBuffer.wrap(bytes);
+		difficulty = Difficulty.values()[bb.get()];
+		flagType = bb.get();
+		gamesWon = bb.get()*128 + bb.get();
+		gamesLost = bb.get()*128 + bb.get();
+		currentWinningStreak = bb.get()*128 + bb.get();
+		longestWinningStreak = bb.get()*128 + bb.get();
+		currentLosingStreak = bb.get()*128 + bb.get();
+		longestLosingStreak = bb.get()*128 + bb.get();
 	}
 
 	@Override
