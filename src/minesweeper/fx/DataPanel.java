@@ -11,8 +11,8 @@ import minesweeper.game.Config;
 import minesweeper.game.Difficulty;
 import minesweeper.game.Game;
 
-import static minesweeper.Formatter.formatScore;
-import static minesweeper.Formatter.listenToScoreFormatChange;
+import static minesweeper.Formatter.SCORE_FORMAT;
+import static minesweeper.Formatter.SCORE_FORMAT_PROPERTY;
 import static minesweeper.game.TileState.MINE;
 
 public class DataPanel extends HBox {
@@ -39,8 +39,8 @@ public class DataPanel extends HBox {
 		Config.boolListen("No Flagging", (a, b, c) -> mines.setText(Game.get().getRemainingMines() + ""));
 
 		Game.get().listenToRemainingMines((a, b, c) -> mines.setText(c.intValue() + ""));
-		Game.get().clock.listenToTime((a, b, c) -> timer.setText(formatScore(c.longValue()) + " \u231A"));
-		listenToScoreFormatChange(() -> timer.setText(formatScore(Game.get().clock.getTime())));
+		Game.get().clock.listenToTime((a, b, c) -> timer.setText(SCORE_FORMAT.format(c.longValue()) + " \u231A"));
+		SCORE_FORMAT_PROPERTY.addListener((a, b, c) -> timer.setText(c.format(Game.get().clock.getTime())));
 		mines.textProperty().addListener((a, b, c) -> {
 			if(Config.bool("No Flagging"))
 				mines.setText(MINE.text + " NF");

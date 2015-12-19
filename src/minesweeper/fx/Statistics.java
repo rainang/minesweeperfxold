@@ -48,10 +48,10 @@ public class Statistics extends HBox implements InvalidationListener {
 			c.addListener(this);
 			invalidated(c);
 		});
-		listenToScoreFormatChange(() -> {
-			setText(best, formatScore(currentPage.get().getBestTime()));
-			setText(worst, formatScore(currentPage.get().getWorstTime()));
-			setText(aveTime, formatScore(currentPage.get().getAverageTime()));
+		SCORE_FORMAT_PROPERTY.addListener((a, b, c) -> {
+			setText(best, c.format(currentPage.get().getBestTime()));
+			setText(worst, c.format(currentPage.get().getWorstTime()));
+			setText(aveTime, c.format(currentPage.get().getAverageTime()));
 		});
 		currentPage.set(Profile.MAIN.getStats(i1.get(), i2.get()));
 		i1.addListener(o -> {
@@ -107,16 +107,16 @@ public class Statistics extends HBox implements InvalidationListener {
 		setText(won, ds.getGamesWon() + "");
 		setText(lost, ds.getGamesLost() + "");
 		setText(play, ds.getGamesPlayed() + "");
-		setText(winRate, formatDouble(ds.getWinRate()*100) + "%");
-		setText(best, formatScore(ds.getBestTime()));
-		setText(worst, formatScore(ds.getWorstTime()));
+		setText(winRate, DF_RATIO.format(ds.getWinRate()*100) + "%");
+		setText(best, SCORE_FORMAT.format(ds.getBestTime()));
+		setText(worst, SCORE_FORMAT.format(ds.getWorstTime()));
 
-		setText(aveTime, formatScore(ds.getAverageTime()));
-		setText(ave3BV, formatDouble(ds.getAverage3BV()));
-		setText(ave3BVs, formatDouble(ds.getAverage3BVs()));
-		setText(aveIOE, formatDouble(ds.getAverageIOE()));
-		setText(aveRQP, formatDouble(ds.getAverageRQP()));
-		setText(aveIOS, formatDouble(ds.getAverageIOS()));
+		setText(aveTime, SCORE_FORMAT.format(ds.getAverageTime()));
+		setText(ave3BV, DF_RATIO.format(ds.getAverage3BV()));
+		setText(ave3BVs, DF_RATIO.format(ds.getAverage3BVs()));
+		setText(aveIOE, DF_RATIO.format(ds.getAverageIOE()));
+		setText(aveRQP, DF_RATIO.format(ds.getAverageRQP()));
+		setText(aveIOS, DF_RATIO.format(ds.getAverageIOS()));
 
 		if(ds instanceof DifficultyStats.Merged) {
 			cws.setVisible(false);

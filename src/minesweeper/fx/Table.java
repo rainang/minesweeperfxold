@@ -1,23 +1,20 @@
 package minesweeper.fx;
 
-import com.sun.javafx.binding.ExpressionHelper;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.function.Predicate;
-import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.scene.control.*;
 import javafx.util.Callback;
+import minesweeper.Formatter;
 import minesweeper.game.Config;
 import minesweeper.statistics.GameData;
 import minesweeper.statistics.Profile;
 
-import static minesweeper.Formatter.*;
 import static minesweeper.MinesweeperFX.STYLE;
 
 public class Table extends TableView<GameData> {
@@ -67,11 +64,10 @@ public class Table extends TableView<GameData> {
 		ColumnName colName = new ColumnName();
 		ColumnDate colDate = new ColumnDate();
 
-		Column<String> colScore = new Column<>("Score", tipScore, 60, p -> {
-			StringProperty property = new SimpleStringProperty(formatScore(p.getValue().score));
-			listenToScoreFormatChange(() -> property.set(formatScore(p.getValue().score)));
-			return property;
-		});
+		Column<Formatter.Value<Long>> colScore = new Column<>("Score", tipScore, 60,
+															  p -> new Formatter.Property<>(p.getValue().score,
+																							Formatter
+																									.SCORE_FORMAT_PROPERTY));
 		colScore.setContextMenu(MenuBar.contextMenu("Minutes", "Milliseconds"));
 		colScore.setMaxWidth(Integer.MAX_VALUE);
 		colScore.setResizable(true);
@@ -94,14 +90,18 @@ public class Table extends TableView<GameData> {
 		Column<Number> cAct = new Column<>("Actions", tipAct, 60, p -> new SimpleIntegerProperty(p.getValue()
 																										 .actions));
 		Column<Number> cClk = new Column<>("Clicks", tipClk, 60, p -> new SimpleIntegerProperty(p.getValue().clicks));
-		Column<String> cIOE = new Column<>("IOE", tipIOE, 60,
-										   p -> new SimpleStringProperty(formatDouble(p.getValue().getIOE())));
-		Column<String> c3BVs = new Column<>("3BV/s", tip3BVs, 60,
-											p -> new SimpleStringProperty(formatDouble(p.getValue().get3BVs())));
-		Column<String> cRQP = new Column<>("RQP", tipRQP, 60,
-										   p -> new SimpleStringProperty(formatDouble(p.getValue().getRQP())));
-		Column<String> cIOS = new Column<>("IOS", tipIOS, 60,
-										   p -> new SimpleStringProperty(formatDouble(p.getValue().getIOS())));
+		Column<Formatter.Value<Double>> cIOE = new Column<>("IOE", tipIOE, 60,
+															p -> new Formatter.Property<>(p.getValue().getIOE(),
+																						  Formatter.DF_RATIO));
+		Column<Formatter.Value<Double>> c3BVs = new Column<>("3BV/s", tip3BVs, 60,
+															 p -> new Formatter.Property<>(p.getValue().get3BVs(),
+																						   Formatter.DF_RATIO));
+		Column<Formatter.Value<Double>> cRQP = new Column<>("RQP", tipRQP, 60,
+															p -> new Formatter.Property<>(p.getValue().getRQP(),
+																						  Formatter.DF_RATIO));
+		Column<Formatter.Value<Double>> cIOS = new Column<>("IOS", tipIOS, 60,
+															p -> new Formatter.Property<>(p.getValue().getIOS(),
+																						  Formatter.DF_RATIO));
 
 		NestedColumn colBoard = new NestedColumn("Board", c3bv, cOps, cIsl);
 		NestedColumn colEfficiency = new NestedColumn("Efficiency", cAct, cClk, cIOE);
@@ -169,20 +169,17 @@ public class Table extends TableView<GameData> {
 		}
 	}
 
-	public class ColumnDate extends Column<Date> {
-
-		private final String formatLong    = "EEE ddMMMyy hh:mm:ss a";
-		private final Format defaultFormat = new SimpleDateFormat(formatLong);
+	public class ColumnDate extends Column<Formatter.Value<Date>> {
 
 		public ColumnDate() {
 			super("Date", tipDate);
 			Label label = (Label)getGraphic();
 			TextField field = new TextField();
-			ObjectProperty<Format> format = new SimpleObjectProperty<>(defaultFormat);
 			setContextMenu(new ContextMenu());
 			label.setContextMenu(new ContextMenu());
 
-			setCellValueFactory(p -> new FormattedProperty(p.getValue().date, format));
+			setCellValueFactory(
+					p -> new Formatter.Property<>(new Date(p.getValue().date), Formatter.DATE_FORMAT_PROPERTY));
 			setMinWidth(200);
 			setMaxWidth(200);
 
@@ -197,12 +194,12 @@ public class Table extends TableView<GameData> {
 			field.textProperty().addListener((a, b, c) -> {
 				Format f = null;
 				try {
-					f = c.isEmpty() ? defaultFormat : new SimpleDateFormat(c);
+					f = c.isEmpty() ? Formatter.DATE_FORMAT : new SimpleDateFormat(c);
 				} catch(IllegalArgumentException e) {
-					f = defaultFormat;
+					f = Formatter.DATE_FORMAT;
 				} finally {
 					if(f != null)
-						format.set(f);
+						Formatter.DATE_FORMAT_PROPERTY.set(f);
 				}
 			});
 			field.setOnAction(a -> setGraphic(label));
@@ -210,7 +207,7 @@ public class Table extends TableView<GameData> {
 				if(!c)
 					setGraphic(label);
 				if(field.getText().isEmpty())
-					field.setText(formatLong);
+					field.setText(Formatter.DATE_FORMAT_PATTERN);
 			});
 
 			Config.stringBind("Date Format", field.textProperty());
@@ -248,47 +245,6 @@ public class Table extends TableView<GameData> {
 			setMinWidth(size);
 			setMaxWidth(size);
 			setCellValueFactory(cvf);
-		}
-	}
-
-	public class FormattedProperty implements ObservableValue<Date> {
-
-		private Date value;
-		private ExpressionHelper<Date> helper = null;
-
-		public FormattedProperty(long time, ObjectProperty<Format> format) {
-			value = new Date() {
-				public String toString() {
-					return format.get().format(time);
-				}
-			};
-			value.setTime(time);
-			format.addListener(e -> ExpressionHelper.fireValueChangedEvent(helper));
-		}
-
-		@Override
-		public void addListener(ChangeListener<? super Date> listener) {
-			ExpressionHelper.addListener(helper, this, listener);
-		}
-
-		@Override
-		public void removeListener(ChangeListener<? super Date> listener) {
-			ExpressionHelper.removeListener(helper, listener);
-		}
-
-		@Override
-		public Date getValue() {
-			return value;
-		}
-
-		@Override
-		public void addListener(InvalidationListener listener) {
-			ExpressionHelper.addListener(helper, this, listener);
-		}
-
-		@Override
-		public void removeListener(InvalidationListener listener) {
-			ExpressionHelper.removeListener(helper, listener);
 		}
 	}
 }

@@ -29,28 +29,12 @@ public class DifficultyStats implements Contractible, Observable {
 
 	private DifficultyStats() {}
 
-	public DifficultyStats(int[] stats) {
-		this.difficulty = Difficulty.values()[stats[0]];
-		this.flagType = stats[1];
-
-		gamesWon = stats[2];
-		gamesLost = stats[3];
-		currentWinningStreak = stats[4];
-		longestWinningStreak = stats[5];
-		currentLosingStreak = stats[6];
-		longestLosingStreak = stats[7];
-	}
-
 	public DifficultyStats(byte[] bytes) {
 		fromBytes(bytes);
 	}
 
 	public Difficulty getDifficulty() {
 		return difficulty;
-	}
-
-	public int getFlagType() {
-		return flagType;
 	}
 
 	public int getGamesWon() {
@@ -193,21 +177,13 @@ public class DifficultyStats implements Contractible, Observable {
 
 		private final DifficultyStats[] stats;
 
-		private int id = 0;
-
 		public Merged(DifficultyStats... stats) {
 			this.stats = stats;
-			this.id = stats.length == 2 ? 0 : 1;
 		}
 
 		@Override
 		public Difficulty getDifficulty() {
 			return stats[0].difficulty;
-		}
-
-		@Override
-		public int getFlagType() {
-			return id == 0 ? 2 : stats[0].flagType;
 		}
 
 		@Override

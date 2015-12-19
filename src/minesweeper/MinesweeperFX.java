@@ -16,7 +16,7 @@ import minesweeper.statistics.Profile;
 
 public class MinesweeperFX extends Application {
 
-	public static final String VERSION = "2.3.0";
+	public static final String VERSION = "2.3.1";
 
 	public static final String STYLE = "-fx-font-family: \"Calibri\"; -fx-alignment: CENTER";
 
