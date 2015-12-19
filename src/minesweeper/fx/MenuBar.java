@@ -53,6 +53,7 @@ public class MenuBar extends javafx.scene.control.MenuBar {
 		Menu view = new Menu("View");
 		Menu timer = new Menu("Timer");
 		Menu tileSize = new Menu("Tile Size");
+		Menu about = new Menu("About");
 
 		addToMenu(file, createMenuItem("New", KeyCode.F2, false, e -> newGame()));
 		addToMenu(file, createMenuItem("Restart", KeyCode.F3, false, e -> restart()), separator());
@@ -76,10 +77,12 @@ public class MenuBar extends javafx.scene.control.MenuBar {
 
 		addToMenu(tileSize, resolutions);
 
+		addToMenu(about, createMenuItem("Changelog", null, false, e -> Dialog.showChangeLog()));
+
 		listenToGame((a, b, c) -> file.getItems().get(file.getItems().size() - 2)
 									  .setDisable(!(c.equals(WIN) || c.equals(LOSE))));
 
-		getMenus().addAll(file, options, view);
+		getMenus().addAll(file, options, view, about);
 		setStyle("-fx-font-family: \"Calibri\";");
 		setHeight(25);
 		setMinHeight(25);
