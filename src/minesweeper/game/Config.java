@@ -102,10 +102,7 @@ public class Config implements Writable, Readable {
 	}
 
 	public static void load() {
-		if(IO.OLD_FILE_CONFIG.exists())
-			loadSettings();
-		else
-			INSTANCE.read(IO.FILE_CFG);
+		INSTANCE.read(IO.FILE_CFG);
 	}
 
 	public static void save() {
@@ -155,24 +152,5 @@ public class Config implements Writable, Readable {
 		MAP_BOOL.get("No Flagging").set(bytes[i++] == 0);
 		MAP_BOOL.get("Efficiency").set(bytes[i++] == 0);
 		MAP_BOOL.get("Speed").set(bytes[i] == 0);
-	}
-
-	private static void loadSettings() {
-		Map<String, String> hashMap = new HashMap<>();
-		IO.read(IO.OLD_FILE_CONFIG)
-		  .forEach(s -> hashMap.put(s.substring(0, s.indexOf(":")), s.substring(s.indexOf(":") + 1)));
-
-		Difficulty.set(Difficulty.valueOf(hashMap.get("difficulty")));
-
-		hashMap.keySet().stream().filter(MAP_NUMBER::containsKey).map(MAP_NUMBER::get).forEach(property -> {
-			if(property instanceof DoubleProperty)
-				property.setValue(Double.parseDouble(hashMap.get(property.getName())));
-		});
-		hashMap.keySet().stream().filter(MAP_BOOL::containsKey).map(MAP_BOOL::get)
-			   .forEach(property -> property.set(Boolean.parseBoolean(hashMap.get(property.getName()))));
-		hashMap.keySet().stream().filter(MAP_STRING::containsKey).map(MAP_STRING::get)
-			   .forEach(property -> property.set(hashMap.get(property.getName())));
-		if(getInt("Resolution") != 24 && getInt("Resolution") != 30 && getInt("Resolution") != 36)
-			MAP_NUMBER.get("Resolution").setValue(30);
 	}
 }

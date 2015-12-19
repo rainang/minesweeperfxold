@@ -1,9 +1,13 @@
 package minesweeper.fx;
 
+import com.sun.javafx.binding.ExpressionHelper;
 import java.text.Format;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.function.Predicate;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
@@ -165,7 +169,7 @@ public class Table extends TableView<GameData> {
 		}
 	}
 
-	public class ColumnDate extends Column<String> {
+	public class ColumnDate extends Column<Date> {
 
 		private final String formatLong    = "EEE ddMMMyy hh:mm:ss a";
 		private final Format defaultFormat = new SimpleDateFormat(formatLong);
@@ -178,7 +182,7 @@ public class Table extends TableView<GameData> {
 			setContextMenu(new ContextMenu());
 			label.setContextMenu(new ContextMenu());
 
-			setCellValueFactory(p -> new FormattedStringProperty(p.getValue().date, format));
+			setCellValueFactory(p -> new FormattedProperty(p.getValue().date, format));
 			setMinWidth(200);
 			setMaxWidth(200);
 
@@ -247,12 +251,44 @@ public class Table extends TableView<GameData> {
 		}
 	}
 
-	public class FormattedStringProperty extends SimpleStringProperty {
+	public class FormattedProperty implements ObservableValue<Date> {
 
-		public FormattedStringProperty(long time, ObjectProperty<Format> format) {
+		private Date value;
+		private ExpressionHelper<Date> helper = null;
 
-			format.addListener((a, b, c) -> set(c.format(time)));
-			set(format.get().format(time));
+		public FormattedProperty(long time, ObjectProperty<Format> format) {
+			value = new Date() {
+				public String toString() {
+					return format.get().format(time);
+				}
+			};
+			value.setTime(time);
+			format.addListener(e -> ExpressionHelper.fireValueChangedEvent(helper));
+		}
+
+		@Override
+		public void addListener(ChangeListener<? super Date> listener) {
+			ExpressionHelper.addListener(helper, this, listener);
+		}
+
+		@Override
+		public void removeListener(ChangeListener<? super Date> listener) {
+			ExpressionHelper.removeListener(helper, listener);
+		}
+
+		@Override
+		public Date getValue() {
+			return value;
+		}
+
+		@Override
+		public void addListener(InvalidationListener listener) {
+			ExpressionHelper.addListener(helper, this, listener);
+		}
+
+		@Override
+		public void removeListener(InvalidationListener listener) {
+			ExpressionHelper.removeListener(helper, listener);
 		}
 	}
 }

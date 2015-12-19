@@ -1,8 +1,6 @@
 package minesweeper.io;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 import javafx.stage.FileChooser;
 import minesweeper.game.Config;
 
@@ -16,10 +14,6 @@ public class IO {
 
 	public static final File FILE_CFG   = new File(DIRECTORY + "minesweeperfx.dat");
 	public static final File FILE_STATS = new File(DIR_USER + MAIN_PROFILE + ".dat");
-
-	public static final File OLD_FILE_CONFIG = new File(DIRECTORY + "minesweeperfx.ini");
-	public static final File OLD_FILE_STATS  = new File(DIR_USER + MAIN_PROFILE + "\\stats.dat");
-	public static final File OLD_FILE_HIGHS  = new File(DIR_USER + MAIN_PROFILE + "\\highscores.dat");
 
 	public static final FileChooser FILE_CHOOSER = new FileChooser();
 
@@ -37,16 +31,6 @@ public class IO {
 
 		FILE_CHOOSER.setInitialDirectory(new File(DIR_BOARDS));
 		FILE_CHOOSER.getExtensionFilters().add(new FileChooser.ExtensionFilter("Minesweeper Board File", "*.msb"));
-	}
-
-	public static List<String> read(File file) {
-		List<String> lines = new ArrayList<>();
-		try {
-			BufferedReader br = new BufferedReader(new FileReader(file.getAbsolutePath()));
-			br.lines().forEach(lines::add);
-			br.close();
-		} catch(IOException ignored) {}
-		return lines;
 	}
 
 	public static void writeBytes(byte[] bytes, String path) {

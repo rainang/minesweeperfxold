@@ -16,7 +16,7 @@ import minesweeper.statistics.Profile;
 
 public class MinesweeperFX extends Application {
 
-	public static final String VERSION = "2.2.0";
+	public static final String VERSION = "2.3.0";
 
 	public static final String STYLE = "-fx-font-family: \"Calibri\"; -fx-alignment: CENTER";
 
@@ -32,6 +32,7 @@ public class MinesweeperFX extends Application {
 	public static void main(String[] args) {
 		Config.init();
 		IO.init();
+		Formatter.init();
 		launch(args);
 	}
 
@@ -68,7 +69,6 @@ public class MinesweeperFX extends Application {
 		if(!initialized) {
 			Config.load();
 			Profile.load();
-			Formatter.init();
 			initialized = true;
 		}
 	}
